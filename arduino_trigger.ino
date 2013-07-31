@@ -11,6 +11,7 @@ byte command;
 
 
 void setup() {
+
   
  pinMode( TARGET_PIN_NR, OUTPUT ); 
  Serial.begin( SERIAL_BAUDRATE );
