@@ -1,48 +1,47 @@
 #define TARGET_PIN_NR 9
 
-#define VOLTAGE_LOW_LEVEL 0
-#define VOLTAGE_HIGH_LEVEL 128
-
 #define INTERVAL 40
-#define SERIAL_BAUDRATE 9600
+#define SERIAL_BAUDRATE 76800
 
 
 byte command;
 
 
 void setup() {
-
+  // selects the output pin (towards the ADC()
+  pinMode( TARGET_PIN_NR, OUTPUT ); 
+  // begins the communication on a proper baudrate
+  // see (uri: 
+  Serial.begin( SERIAL_BAUDRATE );
   
- pinMode( TARGET_PIN_NR, OUTPUT ); 
- Serial.begin( SERIAL_BAUDRATE );
- 
- clearSerialBuffer();
- 
+  // clears starup noise from the serial buffer
+  clearSerialBuffer();
 }
 
 
 void loop() {
-  
+
   if ( Serial.available() > 0 ) { 
-    
     command = Serial.read();
-    
+
     if ( command == 'A' ) {
-      // digital signal at max voltage
+      // reacts only to 'A', to make cancel out the noise
       digitalWrite( TARGET_PIN_NR, HIGH );
       delay( INTERVAL );
       digitalWrite( TARGET_PIN_NR, LOW );  
-    
+
     }
-    
-    clearSerialBuffer(); // clears all commands received while the trigger was on
-    
+
+    // clears all characters in the buffer to avoid 
+    // time accumulation (does not exceed 40 ms for each trigger call)
+    clearSerialBuffer(); 
   }
 }
 
 
 void clearSerialBuffer() {
- while( Serial.available() > 0 ) {
-   Serial.read(); 
- }
+  while( Serial.available() > 0 ) {
+    Serial.read(); 
+  }
 }
+
